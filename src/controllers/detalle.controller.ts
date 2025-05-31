@@ -1,53 +1,53 @@
 import { Request, Response } from "express";
-import * as descuentoService from "../services/descuento.service"
+import * as detalleService from "../services/detalle.service"
 
-export const obtenerDescuentos = async (_req: Request, res: Response) => {
+export const obtenerDetalles = async (_req: Request, res: Response) => {
     try {
-        const descuentos = await descuentoService.obtenerDescuentos();
-        res.json(descuentos);
+        const detalles = await detalleService.obtenerDetalles();
+        res.json(detalles);
     } catch (error) {
-        res.status(500).json({ message: "error al obtener descuentos"});
+        res.status(500).json({ message: "error al obtener detalles"});
     }
 }
 
-export const obtenerDescuentoPorId = async (req: Request, res: Response): Promise<Response> => {
+export const obtenerDetallePorId = async (req: Request, res: Response): Promise<Response> => {
     try {
         const { id } = req.params;
-        const descuento = await descuentoService.obtenerDescuentoPorId(parseInt(id));
-        if (!descuento) {
-            return res.status(404).json({ message: "Descuento no encontrado" });
+        const detalle = await detalleService.obtenerDetallePorId(parseInt(id));
+        if (!detalle) {
+            return res.status(404).json({ message: "Detalle no encontrado" });
         }
-        return res.json(descuento);
+        return res.json(detalle);
     } catch (error) {
-        return res.status(500).json({ message: "Error al obtener descuento" });
+        return res.status(500).json({ message: "Error al obtener detalle" });
     }
 };
 
-export const crearDescuento = async (req: Request, res: Response) => {
+export const crearDetalle = async (req: Request, res: Response) => {
     try {
-        const nuevoDescuento = await descuentoService.crearDescuento(req.body)
-        res.status(201).json(nuevoDescuento)
+        const nuevoDetalle = await detalleService.crearDetalle(req.body)
+        res.status(201).json(nuevoDetalle)
     } catch (error) {
-        res.status(500).json({message: "error al registrar un descuento"})
+        res.status(500).json({message: "error al registrar un detalle"})
     }
 }
 
-export const actualizarDescuento = async(req: Request, res: Response) => {
+export const actualizarDetalle = async(req: Request, res: Response) => {
     try {
         const { id} = req.params;
-        const descuentoActualizado = await descuentoService.actualizarDescuento(parseInt(id), req.body)
-        res.status(201).json(descuentoActualizado)
+        const detalleActualizado = await detalleService.actualizarDetalle(parseInt(id), req.body)
+        res.status(201).json(detalleActualizado)
     } catch (error) {
-        res.status(500).json({message: "Error al actualizar descuento"})
+        res.status(500).json({message: "Error al actualizar detalle"})
     }
 }
 
-export const eliminarDescuento = async (req: Request, res: Response) => {
+export const eliminarDetalle = async (req: Request, res: Response) => {
     try {
         const {id} = req.params;
-        await descuentoService.eliminarDescuento(parseInt(id));
+        await detalleService.eliminarDetalle(parseInt(id));
         res.status(204).send();
     } catch (error) {
-        res.status(500).json({message: "Error al eliminar descuento"})
+        res.status(500).json({message: "Error al eliminar detalle"})
     }
 }

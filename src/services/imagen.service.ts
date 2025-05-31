@@ -4,7 +4,7 @@ type ImagenData = {
     url: string
 }
 
-export const obtenerImagens = async () => {
+export const obtenerImagenes = async () => {
     return await prisma.imagen.findMany()
 }
 

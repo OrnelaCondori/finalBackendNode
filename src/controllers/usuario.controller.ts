@@ -23,10 +23,9 @@ export const obtenerUsuarioPorId = async (req: Request, res: Response): Promise<
     }
 };
 
-export const registrarUsuario = async (req: Request, res: Response) => {
+export const crearUsuario = async (req: Request, res: Response) => {
     try {
-        const {nombre, email, contraseña, dni, rol} = req.body;
-        const nuevoUsuario = await usuarioService.crearUsuario({nombre, email, contraseña, dni, rol});
+        const nuevoUsuario = await usuarioService.crearUsuario(req.body)
         res.status(201).json(nuevoUsuario)
     } catch (error) {
         res.status(500).json({message: "error al registrar un usuario"})
@@ -36,8 +35,7 @@ export const registrarUsuario = async (req: Request, res: Response) => {
 export const actualizarUsuario = async(req: Request, res: Response) => {
     try {
         const { id} = req.params;
-        const {nombre, email, contraseña, dni, rol} = req.body;
-        const usuarioActualizado = await usuarioService.actualizarUsuario(parseInt(id), {nombre, email, contraseña, dni, rol});
+        const usuarioActualizado = await usuarioService.actualizarUsuario(parseInt(id), req.body)
         res.status(201).json(usuarioActualizado)
     } catch (error) {
         res.status(500).json({message: "Error al actualizar usuario"})

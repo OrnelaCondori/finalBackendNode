@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ADMIN
+  CLIENTE
+}
+
+enum Sexo {
+  MASCULINO
+  FEMENINO
+  UNISEX
+}
+
+enum tipoProducto {
+  ZAPATILLA
+  REMERA
+  BUZO
+  SHORT
+  PANTALON
+  CAMPERA
+  ACCESORIO
+}
+
+model Usuario {
+  id          BigInt @id @default(autoincrement())
+  contraseña String
+  email       String @unique
+  nombre      String
+  dni         String
+  rol         Rol
+
+  direccion UsuarioDireccion[]
+}
+
+model Direccion {
+  id           BigInt @id @default(autoincrement())
+  pais         String
+  provincia    String
+  departamento String
+  localidad    String
+
+  usuarioDireccion UsuarioDireccion[]
+}
+
+model UsuarioDireccion {
+  id          BigInt @id @default(autoincrement())
+  usuarioId   BigInt @map("usuario_id")
+  direccionId BigInt @map("direccion_id")
+
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
+  direccion Direccion @relation(fields: [direccionId], references: [id])
+
+  ordenes OrdenCompra[]
+
+  @@unique([usuarioId, direccionId]) // evita duplicados
+}
+
+model Categoria {
+  id     BigInt @id @default(autoincrement())
+  nombre String
+
+  productos Producto[]
+}
+
+model Producto {
+  id           BigInt       @id @default(autoincrement())
+  nombre       String
+  sexo         Sexo
+  tipoProducto tipoProducto
+  categoriaId  BigInt       @map("categoria_id")
+
+  categoria Categoria @relation(fields: [categoriaId], references: [id])
+
+  detalles Detalle[]
+
+  @@index([categoriaId])
+}
+
+model Detalle {
+  id         BigInt  @id @default(autoincrement())
+  color      String
+  marca      String
+  stock      Int
+  estado     Boolean
+  productoId BigInt  @map("producto_id")
+  talleId    BigInt  @map("talle_id")
+  precioId   BigInt  @map("precio_id")
+
+  producto Producto @relation(fields: [productoId], references: [id])
+  talle    Talle    @relation(fields: [talleId], references: [id])
+  precio   Precio   @relation(fields: [precioId], references: [id])
+
+  imagenes     DetalleImagen[]
+  ordenesItems OrdenCompraDetalle[]
+
+  @@index([productoId])
+  @@index([talleId])
+  @@index([precioId])
+}
+
+model Talle {
+  id     BigInt @id @default(autoincrement())
+  numero String
+
+  detalles Detalle[]
+}
+
+model Imagen {
+  id  BigInt @id @default(autoincrement())
+  url String
+
+  detalleImagenes DetalleImagen[]
+
+  @@map("imagen")
+}
+
+model DetalleImagen {
+  id BigInt @id @default(autoincrement())
+
+  detalleId BigInt
+  imagenId  BigInt
+
+  detalle Detalle @relation(fields: [detalleId], references: [id])
+  imagen  Imagen  @relation(fields: [imagenId], references: [id])
+
+  @@map("detalle_imagen")
+}
+
+model Descuento {
+  id          BigInt   @id @default(autoincrement())
+  fechaInicio DateTime @map("fecha_inicio")
+  fechaFinal  DateTime @map("fecha_final")
+  porcentaje  Float
+
+  precios PrecioDescuento[] // Relación N:N con Precio
+
+  @@map("descuento")
+}
+
+model Precio {
+  id           BigInt @id @default(autoincrement())
+  precioCompra Float  @map("precio_compra")
+  precioVenta  Float  @map("precio_venta")
+
+  detalles   Detalle[] // Relación 1:N con Detalle
+  descuentos PrecioDescuento[] // Relación N:N con Descuento
+
+  @@map("precio")
+}
+
+model PrecioDescuento {
+  precioId    BigInt
+  descuentoId BigInt
+
+  precio    Precio    @relation(fields: [precioId], references: [id])
+  descuento Descuento @relation(fields: [descuentoId], references: [id])
+
+  @@id([precioId, descuentoId])
+  @@map("precio_descuento")
+}
+
+model OrdenCompra {
+  id                 BigInt   @id @default(autoincrement())
+  fechaCompra        DateTime @map("fecha_compra")
+  total              Float
+  usuarioDireccionId BigInt   @map("id_usuario_direccion")
+
+  usuarioDireccion UsuarioDireccion @relation(fields: [usuarioDireccionId], references: [id])
+
+  detalles OrdenCompraDetalle[] // Relación 1:N con OrdenCompraDetalle
+
+  @@map("orden_compra")
+}
+
+model OrdenCompraDetalle {
+  ordenCompraId BigInt @map("orden_compra_id")
+  detalleId     BigInt
+
+  ordenCompra OrdenCompra @relation(fields: [ordenCompraId], references: [id])
+  detalle     Detalle     @relation(fields: [detalleId], references: [id])
+
+  @@id([ordenCompraId, detalleId])
+  @@map("orden_compra_detalle")
+}

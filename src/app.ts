@@ -26,7 +26,7 @@ app.use(express.json());
 
 
 // Rutas de autenticación
-app.use("/api/auth", authRoutes); 
+app.use("/auth", authRoutes); 
 
 // Rutas del sistema
 app.use("/", usuarioRoutes);

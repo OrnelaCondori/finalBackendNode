@@ -56,7 +56,7 @@ export const loginUsuario = async (data: LoginData) => {
 
   // genera payload (sin incluir la contraseña)
     const payload = {
-        id: usuario.id,
+        id: String(usuario.id),
         email: usuario.email,
         rol: usuario.rol,
     }
@@ -75,38 +75,43 @@ export const loginUsuario = async (data: LoginData) => {
 export const registerUsuario = async (data: RegisterData) => {
     const { email, contraseña, nombre, dni, rol = "CLIENTE" } = data;
 
-    // Verifica si ya existe
-    const existe = await prisma.usuario.findUnique({ where: { email } });
-    if (existe) {
-        throw new Error("El usuario ya está registrado");
+    try {
+        // Verifica si ya existe
+        const existe = await prisma.usuario.findUnique({ where: { email } });
+        if (existe) {
+            throw new Error("El usuario ya está registrado");
+        }
+
+        // Hashea la contraseña
+        const hashedPassword = await hashContrasena(contraseña);
+
+        // Crea el usuario
+        const nuevoUsuario = await prisma.usuario.create({
+            data: {
+                email,
+                contraseña: hashedPassword,
+                nombre,
+                dni,
+                rol, // Usamos el valor pasado o el default ("CLIENTE")
+            },
+        });
+
+        // Arma el payload para el token
+        const payload = {
+            id: String(nuevoUsuario.id),
+            email: nuevoUsuario.email,
+            rol: nuevoUsuario.rol,
+        };
+
+        const token = jwt.sign(
+            payload as object,
+            secret as jwt.Secret,
+            { expiresIn: JWT_EXPIRES_INN } as jwt.SignOptions
+        );
+
+        return { token, usuario: payload };
+    } catch (error) {
+        console.error("Error al registrar usuario desde Prisma:", error); 
+        throw error; 
     }
-
-    // Hashea la contraseña
-    const hashedPassword = await hashContrasena(contraseña);
-
-    // Crea el usuario
-    const nuevoUsuario = await prisma.usuario.create({
-        data: {
-            email,
-            contraseña: hashedPassword,
-            nombre,
-            dni,
-            rol,
-        },
-    });
-
-    // Arma el payload para el token
-    const payload = {
-        id: nuevoUsuario.id,
-        email: nuevoUsuario.email,
-        rol: nuevoUsuario.rol,
-    };
-
-    // const token = jwt.sign(
-    //     payload as object,    //tengo que declarar explicitamente el tipo de dato
-    //     secret as jwt.Secret, 
-
-    //     { expiresIn: JWT_EXPIRES_INN} as jwt.SignOptions);   //tengo que declarar explicitamente el tipo de dato
-
-    // return { token, usuario: payload };
 };

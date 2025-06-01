@@ -1,53 +1,78 @@
-import { Request, Response } from "express";
+import { Request, Response } from "express"
 import * as precioDescuentoService from "../services/precioDescuento.service"
 
 export const obtenerPrecioDescuentos = async (_req: Request, res: Response) => {
     try {
-        const precioDescuentos = await precioDescuentoService.obtenerPrecioDescuentos();
-        res.json(precioDescuentos);
+        const precioDescuentos = await precioDescuentoService.obtenerPrecioDescuentos()
+        res.json(precioDescuentos)
     } catch (error) {
-        res.status(500).json({ message: "error al obtener precioDescuentos"});
+        res.status(500).json({ message: "Error al obtener precioDescuentos" })
     }
 }
 
-export const obtenerPrecioDescuentoPorId = async (req: Request, res: Response): Promise<Response> => {
+export const obtenerPrecioDescuentoPorId = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
-        const precioDescuento = await precioDescuentoService.obtenerPrecioDescuentoPorId(parseInt(id));
+        const precioId = parseInt(req.params.precioId)
+        const descuentoId = parseInt(req.params.descuentoId)
+
+        const precioDescuento = await precioDescuentoService.obtenerPrecioDescuentoPorId(
+        precioId,
+        descuentoId
+        )
+
         if (!precioDescuento) {
-            return res.status(404).json({ message: "PrecioDescuento no encontrado" });
+        return res.status(404).json({ message: "PrecioDescuento no encontrado" })
         }
-        return res.json(precioDescuento);
+
+        return res.json(precioDescuento)
     } catch (error) {
-        return res.status(500).json({ message: "Error al obtener precioDescuento" });
+        return res.status(500).json({ message: "Error al obtener precioDescuento" })
     }
-};
+}
 
 export const crearPrecioDescuento = async (req: Request, res: Response) => {
     try {
-        const nuevoPrecioDescuento = await precioDescuentoService.crearPrecioDescuento(req.body)
-        res.status(201).json(nuevoPrecioDescuento)
+        const { precioId, descuentoId } = req.body
+        const nuevo = await precioDescuentoService.crearPrecioDescuento({
+        precioId: Number(precioId),
+        descuentoId: Number(descuentoId),
+        })
+
+        res.status(201).json(nuevo)
     } catch (error) {
-        res.status(500).json({message: "error al registrar un precioDescuento"})
+        res.status(500).json({ message: "Error al registrar un precioDescuento" })
     }
 }
 
-export const actualizarPrecioDescuento = async(req: Request, res: Response) => {
+export const actualizarPrecioDescuento = async (req: Request, res: Response) => {
     try {
-        const { id} = req.params;
-        const precioDescuentoActualizado = await precioDescuentoService.actualizarPrecioDescuento(parseInt(id), req.body)
-        res.status(201).json(precioDescuentoActualizado)
+        const precioId = parseInt(req.params.precioId)
+        const descuentoId = parseInt(req.params.descuentoId)
+        const { precioId: newPrecioId, descuentoId: newDescuentoId } = req.body
+
+        const actualizado = await precioDescuentoService.actualizarPrecioDescuento(
+        precioId,
+        descuentoId,
+        {
+            precioId: Number(newPrecioId),
+            descuentoId: Number(newDescuentoId),
+        }
+        )
+
+        res.status(200).json(actualizado)
     } catch (error) {
-        res.status(500).json({message: "Error al actualizar precioDescuento"})
+        res.status(500).json({ message: "Error al actualizar precioDescuento" })
     }
 }
 
 export const eliminarPrecioDescuento = async (req: Request, res: Response) => {
     try {
-        const {id} = req.params;
-        await precioDescuentoService.eliminarPrecioDescuento(parseInt(id));
-        res.status(204).send();
+        const precioId = parseInt(req.params.precioId)
+        const descuentoId = parseInt(req.params.descuentoId)
+
+        await precioDescuentoService.eliminarPrecioDescuento(precioId, descuentoId)
+        res.status(204).send()
     } catch (error) {
-        res.status(500).json({message: "Error al eliminar precioDescuento"})
+        res.status(500).json({ message: "Error al eliminar precioDescuento" })
     }
 }

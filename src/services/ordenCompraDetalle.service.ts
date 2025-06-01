@@ -14,12 +14,13 @@ export const obtenerOrdenCompraDetalles = async () => {
     })
 }
 
-export const obtenerOrdenCompraDetallePorId = async (id: number) => {
+export const obtenerOrdenCompraDetallePorId = async (ordenCompraId: number, detalleId: number) => {
     return await prisma.ordenCompraDetalle.findUnique({
-        where: { id },
-        include: {
-            ordenCompra: true,
-            detalle: true
+        where: {
+            ordenCompraId_detalleId: {
+                ordenCompraId: ordenCompraId,
+                detalleId: detalleId,
+            }
         }
     })
 }
@@ -30,15 +31,17 @@ export const crearOrdenCompraDetalle = async (data: OrdenCompraDetalleData) => {
     })
 }
 
-export const actualizarOrdenCompraDetalle = async (id: number, data: OrdenCompraDetalleData) => {
+export const actualizarOrdenCompraDetalle = async (ordenCompraId: number, detalleId: number, data: OrdenCompraDetalleData) => {
     return await prisma.ordenCompraDetalle.update({
-        where: { id },
+        where: {
+            ordenCompraId_detalleId: { ordenCompraId, detalleId }
+        },
         data
     })
 }
 
-export const eliminarOrdenCompraDetalle = async (id: number) => {
+export const eliminarOrdenCompraDetalle = async (ordenCompraId: number, detalleId: number) => {
     return await prisma.ordenCompraDetalle.delete({
-        where: { id }
+        where: { ordenCompraId_detalleId: { ordenCompraId, detalleId } }
     })
 }

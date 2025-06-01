@@ -8,19 +8,26 @@ type PrecioDescuentoData = {
 export const obtenerPrecioDescuentos = async () => {
     return await prisma.precioDescuento.findMany({
         include: {
-            precio: true,
-            descuento: true
+        precio: true,
+        descuento: true
         }
     })
-    
 }
 
-export const obtenerPrecioDescuentoPorId = async (id: number) => {
+export const obtenerPrecioDescuentoPorId = async (
+    precioId: number,
+    descuentoId: number
+    ) => {
     return await prisma.precioDescuento.findUnique({
-        where: { id },
+        where: {
+        precioId_descuentoId: {
+            precioId,
+            descuentoId
+        }
+        },
         include: {
-            precio: true,
-            descuento: true
+        precio: true,
+        descuento: true
         }
     })
 }
@@ -31,15 +38,32 @@ export const crearPrecioDescuento = async (data: PrecioDescuentoData) => {
     })
 }
 
-export const actualizarPrecioDescuento = async (id: number, data: PrecioDescuentoData) => {
+export const actualizarPrecioDescuento = async (
+    precioId: number,
+    descuentoId: number,
+    data: PrecioDescuentoData
+    ) => {
     return await prisma.precioDescuento.update({
-        where: { id },
+        where: {
+        precioId_descuentoId: {
+            precioId,
+            descuentoId
+        }
+        },
         data
     })
 }
 
-export const eliminarPrecioDescuento = async (id: number) => {
+export const eliminarPrecioDescuento = async (
+    precioId: number,
+    descuentoId: number
+    ) => {
     return await prisma.precioDescuento.delete({
-        where: { id }
+        where: {
+        precioId_descuentoId: {
+            precioId,
+            descuentoId
+        }
+        }
     })
 }

@@ -3,10 +3,10 @@ import * as ordenCompraDetalleController from "../controllers/ordenCompraDetalle
 
 const router = express.Router()
 
-router.get("/ordenCompraDetalles", ordenCompraDetalleController.obtenerordenCompraDetalles)
-// router.get("/ordenCompraDetalles/:id", ordenCompraDetalleController.obtenerordenCompraDetallePorId)
-router.post("/ordenCompraDetalles", ordenCompraDetalleController.crearordenCompraDetalle)
-router.put("/ordenCompraDetalles/:id", ordenCompraDetalleController.actualizarordenCompraDetalle)
-router.delete("/ordenCompraDetalles/:id", ordenCompraDetalleController.eliminarordenCompraDetalle)
+router.get("/ordenCompraDetalles", ordenCompraDetalleController.obtenerOrdenCompraDetalles)
+// router.get("/ordenCompraDetalles/:id", ordenCompraDetalleController.obtenerOrdenCompraDetallePorId)
+router.post("/ordenCompraDetalles", ordenCompraDetalleController.crearOrdenCompraDetalle)
+router.put("/ordenCompraDetalles/:id", ordenCompraDetalleController.actualizarOrdenCompraDetalle)
+router.delete("/ordenCompraDetalles/:id", ordenCompraDetalleController.eliminarOrdenCompraDetalle)
 
 export default router

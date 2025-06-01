@@ -1,5 +1,6 @@
 import express from "express"
 import * as productoController from "../controllers/producto.controller"
+import { authenticateToken } from "../middlewares/auth.middleware"
 
 const router = express.Router()
 

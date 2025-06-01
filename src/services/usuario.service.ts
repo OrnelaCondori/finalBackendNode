@@ -1,4 +1,5 @@
 import { prisma } from "../models/index"
+import { hashContrasena } from "./auth.service"
 
 type UsuarioData = {
     nombre: string
@@ -19,8 +20,19 @@ export const obtenerUsuarioPorId = async (id: number) => {
 }
 
 export const crearUsuario = async (data: UsuarioData) => {
+
+    //uso el hasher de contraseña
+    const hashed = await hashContrasena(data.contraseña)
+
+    //locrea on la contraseña hasheada
     return await prisma.usuario.create({
-        data
+        data: {
+            nombre: data.nombre,
+            email: data.email,
+            contraseña: hashed,
+            dni: data.dni,
+            rol: data.rol
+        }
     })
 }
 

@@ -1,11 +1,13 @@
 // src/controllers/ordenCompraDetalle.controller.ts
 import { Request, Response } from "express"
 import * as ordenCompraDetalleService from "../services/ordenCompraDetalle.service"
+import {convertirBigIntAString} from "../utils/convertirBigInt"
 
 export const obtenerOrdenCompraDetalles = async (_req: Request, res: Response) => {
     try {
         const ordenCompraDetalles = await ordenCompraDetalleService.obtenerOrdenCompraDetalles()
-        res.json(ordenCompraDetalles)
+        const ordenCompraDetalleConvertido = ordenCompraDetalles.map(convertirBigIntAString)
+        res.json(ordenCompraDetalleConvertido )
     } catch (error) {
         res.status(500).json({ message: "Error al obtener ordenCompraDetalles" })
     }
@@ -22,7 +24,7 @@ export const obtenerOrdenCompraDetallePorId = async (req: Request, res: Response
         if (!ordenCompraDetalle) {
         return res.status(404).json({ message: "ordenCompraDetalle no encontrado" })
         }
-        return res.json(ordenCompraDetalle)
+        return res.json(convertirBigIntAString(ordenCompraDetalle))
     } catch (error) {
         return res.status(500).json({ message: "Error al obtener ordenCompraDetalle" })
     }
@@ -36,7 +38,7 @@ export const crearOrdenCompraDetalle = async (req: Request, res: Response) => {
         ordenCompraId: Number(ordenCompraId),
         detalleId: Number(detalleId),
         })
-        res.status(201).json(nuevo)
+        res.status(201).json(convertirBigIntAString(nuevo))
     } catch (error) {
         res.status(500).json({ message: "Error al registrar un ordenCompraDetalle" })
     }
@@ -55,7 +57,7 @@ export const actualizarOrdenCompraDetalle = async (req: Request, res: Response) 
         }
         const actualizado =
         await ordenCompraDetalleService.actualizarOrdenCompraDetalle(ordenCompraId, detalleId, data)
-        res.status(200).json(actualizado)
+        res.status(200).json(convertirBigIntAString(actualizado))
     } catch (error) {
         res.status(500).json({ message: "Error al actualizar ordenCompraDetalle" })
     }
@@ -66,7 +68,7 @@ export const eliminarOrdenCompraDetalle = async (req: Request, res: Response) =>
         const ordenCompraId = parseInt(req.params.ordenCompraId)
         const detalleId = parseInt(req.params.detalleId)
         await ordenCompraDetalleService.eliminarOrdenCompraDetalle(ordenCompraId, detalleId)
-        res.status(204).send()
+        res.status(204).send({message: "eliminado correctamente"});
     } catch (error) {
         res.status(500).json({ message: "Error al eliminar ordenCompraDetalle" })
     }

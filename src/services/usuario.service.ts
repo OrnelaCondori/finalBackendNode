@@ -37,11 +37,18 @@ export const crearUsuario = async (data: UsuarioData) => {
 }
 
 export const actualizarUsuario = async (id: number, data: UsuarioData) => {
+    let dataToUpdate = { ...data };
+
+    if (data.contraseña) {
+        const hashed = await hashContrasena(data.contraseña);
+        dataToUpdate.contraseña = hashed;
+    }
+
     return await prisma.usuario.update({
         where: { id },
-        data
-    })
-}
+        data: dataToUpdate
+    });
+};
 
 export const eliminarUsuario = async (id: number) => {
     return await prisma.usuario.delete({
